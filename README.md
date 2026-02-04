@@ -11,6 +11,6 @@ A Spring Boot application to explore how FIDO2 works to enable login using Passk
 ## Functionalities
 
 - Register a new user's credential
-- Authenticate the user with the help of the passkey
+- Authenticate the user with the help of a passkey
 - The app contains simple UI made with Vanilla JS and HTML
 
