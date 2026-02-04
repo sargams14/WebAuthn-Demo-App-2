@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sargam's WebAuthn POC</title>
+    <style>
+        :root {
+            color-scheme: light;
+        }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            background: #f6f7fb;
+            color: #1b1f28;
+        }
+        main {
+            max-width: 860px;
+            margin: 48px auto;
+            padding: 32px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+        p {
+            margin: 8px 0 24px;
+            color: #4b5563;
+        }
+        .form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        label {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 14px;
+            color: #374151;
+        }
+        input {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+        }
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #0f172a;
+            color: #ffffff;
+        }
+        button.secondary {
+            background: #2563eb;
+        }
+        pre {
+            margin-top: 24px;
+            padding: 16px;
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 12px;
+            min-height: 120px;
+            white-space: pre-wrap;
+        }
+        @media (max-width: 720px) {
+            .form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Sargam's WebAuthn (FIDO2) POC</h1>
+    <p>Register a passkey for a username, then authenticate with it.</p>
+
+    <div class="form">
+        <label>
+            Username
+            <input id="username" type="text" placeholder="alice" autocomplete="username" />
+        </label>
+        <label>
+            Display name
+            <input id="displayName" type="text" placeholder="Alice Example" />
+        </label>
+    </div>
+
+    <div class="actions">
+        <button id="registerBtn">Register Passkey</button>
+        <button id="authBtn" class="secondary">Authenticate</button>
+    </div>
+
+    <pre id="log">Ready.</pre>
+</main>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>
