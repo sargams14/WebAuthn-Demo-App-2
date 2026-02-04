@@ -41,6 +41,8 @@ function normalizeCreationOptions(options) {
 
 function normalizeRequestOptions(options) {
     const sanitized = { ...options };
+
+    // Removing extra fields from the options object
     if (sanitized.allowCredentials == null) {
         delete sanitized.allowCredentials;
     }
@@ -125,6 +127,7 @@ async function registerPasskey() {
     log(`Registration complete. CredentialId: ${result.credentialId}`);
 }
 
+// This will be invoked when Authenticate button is clicked
 async function authenticate() {
     if (!window.PublicKeyCredential) {
         log("WebAuthn is not supported in this browser.");
@@ -137,7 +140,7 @@ async function authenticate() {
         return;
     }
 
-    log("Requesting authentication options...");
+    log("Requesting authentication options (Invoking the authenticate options controller).");
     const options = await postJson("/webauthn/authenticate/options", { username });
 
     const publicKey = normalizeRequestOptions(options);
@@ -149,7 +152,7 @@ async function authenticate() {
         return;
     }
 
-    log("Sending authentication response...");
+    log("Sending authentication response (Invoking the authenticate finish controller).");
     const result = await postJson("/webauthn/authenticate/finish", {
         username,
         credential: assertion.toJSON()

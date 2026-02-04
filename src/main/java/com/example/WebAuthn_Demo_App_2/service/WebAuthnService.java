@@ -94,12 +94,12 @@ public class WebAuthnService {
 
         // We convert credential data from request into the right format for webAuthnManager
         RegistrationData registrationData = parseRegistrationData(request);
-        WebAuthnChallenge expectedChallengeEntry = getChallengeEntry(
+        WebAuthnChallenge expectedChallengeEntry = getRegistrationChallengeEntry(
                 request.username(),
                 ChallengeType.REGISTRATION,
                 registrationData
         );
-        ServerProperty serverProperty = serverProperty(expectedChallengeEntry.challenge());
+        ServerProperty serverProperty = buildServerProperty(expectedChallengeEntry.challenge());
 
         RegistrationParameters parameters = new RegistrationParameters(
                 serverProperty,
@@ -124,7 +124,7 @@ public class WebAuthnService {
                 registrationData.getTransports()
         );
 
-        // Adding the credential record to the usersMap
+        // Adding the credential record in the credentialRecords map
         userStore.addCredential(request.username(), credentialRecord);
 
         return new RegistrationFinishResponse(
@@ -160,7 +160,7 @@ public class WebAuthnService {
 
     public AuthenticationFinishResponse finishAuthentication(AuthenticationFinishRequest request) {
         AuthenticationData authenticationData = parseAuthenticationData(request);
-        WebAuthnChallenge expectedChallenge = consumeChallenge(
+        WebAuthnChallenge expectedChallengeEntry = getAuthenticationChallengeEntry(
                 request.username(),
                 ChallengeType.AUTHENTICATION,
                 authenticationData
@@ -169,13 +169,15 @@ public class WebAuthnService {
         CredentialRecord credentialRecord =
                 userStore.getCredential(request.username(), authenticationData.getCredentialId());
 
+        // Collect all registered credential IDs for this user to restrict authentication
+        // to only their known passkeys (username-first flow).
         List<byte[]> allowCredentialIds = new ArrayList<>();
         for (CredentialRecord record : userStore.getCredentials(request.username())) {
             allowCredentialIds.add(record.getAttestedCredentialData().getCredentialId());
         }
 
         AuthenticationParameters parameters = new AuthenticationParameters(
-                serverProperty(expectedChallenge.challenge()),
+                buildServerProperty(expectedChallengeEntry.challenge()),
                 credentialRecord,
                 allowCredentialIds,
                 false,
@@ -188,6 +190,7 @@ public class WebAuthnService {
             throw new WebAuthnException("Authentication verification failed", e);
         }
 
+        // Update the stored signature counter to prevent replay attacks on future authentications.
         if (authenticationData.getAuthenticatorData() != null) {
             credentialRecord.setCounter(authenticationData.getAuthenticatorData().getSignCount());
         }
@@ -223,7 +226,7 @@ public class WebAuthnService {
         }
     }
 
-    private ServerProperty serverProperty(Challenge challenge) {
+    private ServerProperty buildServerProperty(Challenge challenge) {
         return ServerProperty.builder()
                 .origin(new Origin(properties.getOrigin()))
                 .rpId(properties.getRpId())
@@ -231,7 +234,7 @@ public class WebAuthnService {
                 .build();
     }
 
-    private WebAuthnChallenge getChallengeEntry(String username,
+    private WebAuthnChallenge getRegistrationChallengeEntry(String username,
                                        ChallengeType type,
                                        RegistrationData registrationData) {
         if (registrationData.getCollectedClientData() == null) {
@@ -244,7 +247,7 @@ public class WebAuthnService {
         );
     }
 
-    private WebAuthnChallenge consumeChallenge(String username,
+    private WebAuthnChallenge getAuthenticationChallengeEntry(String username,
                                        ChallengeType type,
                                        AuthenticationData authenticationData) {
         if (authenticationData.getCollectedClientData() == null) {

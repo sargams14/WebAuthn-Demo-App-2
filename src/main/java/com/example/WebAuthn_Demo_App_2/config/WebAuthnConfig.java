@@ -19,6 +19,7 @@ public class WebAuthnConfig {
         return new ObjectConverter();
     }
 
+    // Since we are returning response objects directly
     @Bean
     public JacksonModule webAuthnJsonModule(ObjectConverter objectConverter) {
         return new WebAuthnJSONModule(objectConverter);
@@ -29,6 +30,7 @@ public class WebAuthnConfig {
         return WebAuthnManager.createNonStrictWebAuthnManager(objectConverter);
     }
 
+    // Used to generate user IDs in UserStore
     @Bean
     public SecureRandom secureRandom() {
         return new SecureRandom();

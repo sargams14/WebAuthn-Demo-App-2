@@ -34,6 +34,7 @@ public class User {
         return userId;
     }
 
+    // Adding the credential record to a map with the credentialId as the key
     public void addCredential(CredentialRecord credentialRecord) {
         String key = Base64UrlUtil.encodeToString(credentialRecord.getAttestedCredentialData().getCredentialId());
         credentialRecords.put(key, credentialRecord);
