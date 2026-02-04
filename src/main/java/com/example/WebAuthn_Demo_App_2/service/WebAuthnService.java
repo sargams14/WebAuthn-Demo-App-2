@@ -73,7 +73,7 @@ public class WebAuthnService {
         AuthenticatorSelectionCriteria authenticatorSelection = new AuthenticatorSelectionCriteria(
                 null,
                 ResidentKeyRequirement.PREFERRED,
-                UserVerificationRequirement.PREFERRED
+                UserVerificationRequirement.REQUIRED
         );
 
         return new PublicKeyCredentialCreationOptions(
@@ -151,7 +151,7 @@ public class WebAuthnService {
                 properties.getTimeoutMs(),
                 properties.getRpId(),
                 allowCredentials,
-                UserVerificationRequirement.PREFERRED,
+                UserVerificationRequirement.REQUIRED,
                 null
         );
 
